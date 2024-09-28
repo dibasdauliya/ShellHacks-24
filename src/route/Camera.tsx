@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Camera, Video, Repeat, StopCircle } from "lucide-react";
+import uploadToS3 from "@/utils/awsS3";
 
 export function MobileCamera() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -33,7 +34,19 @@ export function MobileCamera() {
     setupCamera();
   }, [isFrontCamera]);
 
-  const capturePhoto = () => {
+  const dataURLtoFile = (dataUrl, filename) => {
+    const arr = dataUrl.split(",");
+    const mime = arr[0].match(/:(.*?);/)[1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, { type: mime });
+  };
+
+  const capturePhoto = async () => {
     if (videoRef.current) {
       const canvas = document.createElement("canvas");
       canvas.width = videoRef.current.videoWidth;
@@ -41,6 +54,15 @@ export function MobileCamera() {
       canvas.getContext("2d")?.drawImage(videoRef.current, 0, 0);
       const imageDataUrl = canvas.toDataURL("image/jpeg");
       setCapturedImage(imageDataUrl);
+
+      const file = dataURLtoFile(imageDataUrl, `photo-${Date.now()}.jpg`);
+
+      try {
+        const s3Url = await uploadToS3(file);
+        console.log("Image uploaded to S3:", s3Url);
+      } catch (error) {
+        console.error("Error uploading image to S3:", error);
+      }
     }
   };
 
@@ -54,12 +76,24 @@ export function MobileCamera() {
           chunksRef.current.push(event.data);
         }
       };
-      mediaRecorderRef.current.onstop = () => {
+      mediaRecorderRef.current.onstop = async () => {
         const blob = new Blob(chunksRef.current, { type: "video/webm" });
         setRecordedVideo(URL.createObjectURL(blob));
         chunksRef.current = [];
         clearInterval(timerRef.current!);
         setRecordingTime(0);
+
+        const file = new File([blob], `video-${Date.now()}.webm`, {
+          type: "video/webm",
+        });
+
+        try {
+          // TODO: takes too long to upload, need to figure out a better way
+          const s3Url = await uploadToS3(file);
+          console.log("Video uploaded to S3:", s3Url);
+        } catch (error) {
+          console.error("Error uploading video to S3:", error);
+        }
       };
       mediaRecorderRef.current.start();
       setIsRecording(true);
