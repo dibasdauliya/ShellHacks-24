@@ -15,6 +15,7 @@ import Dashboard from "./route/Dashboard.tsx";
 import { Auth0Provider } from "@auth0/auth0-react";
 import CreateChildren from "./route/create-children.tsx";
 import { HomeWorkAI } from "./route/HomeWorkAI.tsx";
+import NotesAI from "./route/NotesAI.tsx";
 
 const router = createBrowserRouter([
   {
@@ -68,6 +69,10 @@ const router = createBrowserRouter([
   {
     path: "/homework-ai",
     element: <HomeWorkAI />,
+  },
+  {
+    path: "/notes-ai",
+    element: <NotesAI />,
   },
 ]);
 
