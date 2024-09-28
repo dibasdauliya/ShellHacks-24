@@ -167,14 +167,15 @@ export function HomeWorkAI() {
           }}
           className="flex items-center space-x-2"
         >
-          <Button
+          {/* TODO: future work */}
+          {/* <Button
             type="button"
             variant="outline"
             size="icon"
             onClick={handleFileUpload}
           >
             <Paperclip className="h-5 w-5" />
-          </Button>
+          </Button> */}
           <Input
             type="text"
             placeholder="Ask me anything..."

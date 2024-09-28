@@ -5,6 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import uploadToS3 from "@/utils/awsS3";
 import axios from "axios";
 import { Constants } from "@/Constants";
+import ReactMarkdown from "react-markdown";
+import ClipLoader from "react-spinners/ClipLoader";
+import { AccordionCustom } from "@/components/AccordianCustom";
 
 // Simulated function for AWS upload
 const uploadToAWS = async (file: File): Promise<string> => {
@@ -20,7 +23,10 @@ const uploadToAWS = async (file: File): Promise<string> => {
 const sendToBackend = async (data: {
   images: string[];
   text: string;
-}): Promise<{ formattedContent: string }> => {
+}): Promise<{
+  ai_msg: string;
+  id: number;
+}> => {
   const config = {
     method: "post",
     maxBodyLength: Infinity,
@@ -38,29 +44,20 @@ const sendToBackend = async (data: {
   try {
     const response = await axios.request(config);
     console.log(JSON.stringify(response.data));
+    return { ai_msg: response.data.ai_msg, id: response.data.id };
   } catch (error) {
     console.error("Error making API request:", error);
   }
-
-  //   return new Promise((resolve) => {
-  //     setTimeout(() => {
-  //       const formattedContent = `
-  //         <h1>Formatted Content</h1>
-  //         <p>${data.text}</p>
-  //         ${data.images
-  //           .map((img) => `<img src="${img}" alt="Uploaded image" />`)
-  //           .join("")}
-  //       `;
-  //       resolve({ formattedContent });
-  //     }, 1500);
-  //   });
 };
 
 export default function NotesAI() {
   const [images, setImages] = useState<string[]>([]);
   const [text, setText] = useState("");
   const [formattedContent, setFormattedContent] = useState("");
+  const [contentId, setContentId] = useState<Number>();
   const [isLoading, setIsLoading] = useState(false);
+  const [quiz, setQuiz] = useState<string>("");
+  const [quizLoading, setQuizLoading] = useState(false);
 
   const handleImageUpload = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -68,22 +65,71 @@ export default function NotesAI() {
     const files = event.target.files;
     if (files) {
       setIsLoading(true);
-      //   const uploadedUrls = await Promise.all(
-      //     Array.from(files).map((file) => uploadToAWS(file))
-      //   );
-      const uploadedUrls = ["https://via.placeholder.com/150"];
+      const uploadedUrls = await Promise.all(
+        Array.from(files).map((file) => uploadToAWS(file))
+      );
       setImages((prev) => [...prev, ...uploadedUrls]);
       setIsLoading(false);
     }
+  };
+
+  async function requestQuiz() {
+    setQuizLoading(true);
+    const config = {
+      method: "get",
+      maxBodyLength: Infinity,
+      url: `${Constants.API_URL}/api/getquiz?content_id=${contentId}`,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        "Content-Type": "application/json",
+      },
+    };
+
+    try {
+      const response = await axios.request(config);
+      console.log(JSON.stringify(response.data));
+      setQuiz(response.data.quiz);
+      setQuizLoading(false);
+    } catch (error) {
+      console.error("Error making API request:", error);
+      setQuizLoading(false);
+    }
+  }
+
+  const replaceImagePlaceholders = (
+    response: string,
+    images: string[]
+  ): string => {
+    let updatedResponse = response;
+    images.forEach((image, index) => {
+      const placeholder = `[IMAGE_${index}]`;
+      updatedResponse = updatedResponse.replace(
+        placeholder,
+        `![Uploaded image](${image})`
+      );
+    });
+    return updatedResponse;
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setIsLoading(true);
     console.log({ images, text });
-    const response = await sendToBackend({ images, text });
-    setFormattedContent(response.formattedContent);
-    setIsLoading(false);
+    try {
+      const response = await sendToBackend({ images, text });
+      const responseWithImages = replaceImagePlaceholders(
+        response.ai_msg,
+        images
+      );
+
+      setFormattedContent(responseWithImages);
+      setContentId(response.id);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error making API request:", error);
+      alert("Error making API request");
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -137,13 +183,57 @@ export default function NotesAI() {
         </CardContent>
       </Card>
 
+      {isLoading && (
+        <div className="flex justify-center items-center">
+          <ClipLoader size={50} color={"#123abc"} loading={isLoading} />
+        </div>
+      )}
+
       {formattedContent && (
-        <Card>
+        <Card className="mb-4">
           <CardHeader>
-            <CardTitle>Formatted Content</CardTitle>
+            <CardTitle>Formatted Note</CardTitle>
+          </CardHeader>
+          <CardContent className="prose lg:prose-md">
+            {/* <div dangerouslySetInnerHTML={{ __html: formattedContent }} />
+             */}
+            <ReactMarkdown>{formattedContent}</ReactMarkdown>
+          </CardContent>
+        </Card>
+      )}
+
+      {contentId && (
+        <Button disabled={quizLoading} onClick={requestQuiz}>
+          {quizLoading ? "Loading Quiz..." : "Get Practice Questions"}
+        </Button>
+      )}
+
+      {quizLoading && (
+        <div className="flex justify-center items-center">
+          <ClipLoader size={50} color={"#123abc"} loading={quizLoading} />
+        </div>
+      )}
+
+      {quiz && (
+        <Card className="my-6">
+          <CardHeader>
+            <CardTitle>Get Practice Questions</CardTitle>
           </CardHeader>
           <CardContent>
-            <div dangerouslySetInnerHTML={{ __html: formattedContent }} />
+            {/* <pre>
+              {JSON.stringify(
+                JSON.parse(quiz.replace(/```json|```/g, "")),
+                null,
+                2
+              )}
+            </pre> */}
+
+            <AccordionCustom
+              quizzes={
+                JSON.parse(quiz.replace(/```json|```/g, ""))
+                  .questions_and_answers
+              }
+            />
           </CardContent>
         </Card>
       )}
