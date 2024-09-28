@@ -24,7 +24,7 @@ const apps = [
   { name: "Gallery", icon: Image },
   { name: "Phone", icon: Phone },
   { name: "Video", icon: Video },
-  { name: "Personal AI", icon: BrainCircuit },
+  { name: "Homework AI", icon: BrainCircuit },
   { name: "Notes AI", icon: NotebookPen },
   { name: "Weather", icon: CloudSunRain },
 ];

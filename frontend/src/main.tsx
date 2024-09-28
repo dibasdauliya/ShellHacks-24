@@ -15,6 +15,7 @@ import WeatherApp from "./route/Weather.tsx";
 import Dashboard from "./route/Dashboard.tsx";
 import { Auth0Provider } from "@auth0/auth0-react";
 import CreateChildren from "./route/create-children.tsx";
+import { HomeWorkAI } from "./route/HomeWorkAI.tsx";
 
 const router = createBrowserRouter([
   {
@@ -65,18 +66,22 @@ const router = createBrowserRouter([
     path: "/create-children",
     element: <CreateChildren />,
   },
+  {
+    path: "/homework-ai",
+    element: <HomeWorkAI />,
+  },
 ]);
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <Auth0Provider
-      domain={import.meta.env.VITE_AUTH0_DOMAIN}
-      clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
-      authorizationParams={{
-        redirect_uri: `${window.location.origin}/dashboard`,
-      }}
-    >
-      <RouterProvider router={router} />
-    </Auth0Provider>
-  </StrictMode>
+  // <StrictMode>
+  <Auth0Provider
+    domain={import.meta.env.VITE_AUTH0_DOMAIN}
+    clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
+    authorizationParams={{
+      redirect_uri: `${window.location.origin}/dashboard`,
+    }}
+  >
+    <RouterProvider router={router} />
+  </Auth0Provider>
+  // </StrictMode>
 );

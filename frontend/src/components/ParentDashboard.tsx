@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth0 } from "@auth0/auth0-react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function ParentDashboard() {
   const { user } = useAuth0();
@@ -41,6 +41,9 @@ export default function ParentDashboard() {
           </Button>
         </CardContent>
       </Card>
+      <Link to="/children-login" className="text-blue-500 underline">
+        Children Sign In Page
+      </Link>
     </div>
   );
 }

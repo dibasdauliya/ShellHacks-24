@@ -7,32 +7,11 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
-import axios from "axios";
-import { Constants } from "@/Constants";
-import apiClient from "@/utils/apiClient";
-import { set } from "date-fns";
 
-// PA: id, user_msg: msg
-const getAIResponse = async (
-  message: string,
-  aiId: Number
-): Promise<string> => {
-  const config = {
-    method: "post",
-    url: "/api/chat-personal-ai/",
-    data: { pa: aiId, user_msg: message },
-  };
-
-  try {
-    const response = await apiClient.request(config);
-    return response.data.ai_msg;
-  } catch (error) {
-    console.error("Error making API request:", error);
-    alert("Error making API request");
-  }
-
-  //   await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API delay
-  //   return `Here's an AI response to: "${message}"`;
+// Dummy function to simulate AI response
+const getAIResponse = async (message: string): Promise<string> => {
+  await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API delay
+  return `Here's an AI response to: "${message}"`;
 };
 
 interface Message {
@@ -42,7 +21,7 @@ interface Message {
   attachment?: string;
 }
 
-export function AskAiPage() {
+export function HomeWorkAI() {
   const [messages, setMessages] = useState<Message[]>([
     { id: 1, sender: "ai", content: "Hello! How can I assist you today?" },
   ]);
@@ -50,55 +29,12 @@ export function AskAiPage() {
   const [isLoading, setIsLoading] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [aiNameId, setAiNameId] = useState<Number>();
-  const [aiName, setAiName] = useState<string>();
-
-  useEffect(() => {
-    const lcAiId = localStorage.getItem("aiId");
-    const lcAiName = localStorage.getItem("aiName");
-    console.log(lcAiId);
-    if (lcAiId == "null" || lcAiId == null || lcAiId == undefined) {
-      const aiId = prompt("Enter AI name:");
-      if (aiId) {
-        postAiID(aiId);
-      } else {
-        window.history.back();
-      }
-    } else {
-      setAiNameId(lcAiId);
-      setAiName(lcAiName);
-    }
-  }, []);
 
   useEffect(() => {
     if (scrollAreaRef.current) {
       scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
     }
   }, [messages]);
-
-  async function postAiID(aiName: string) {
-    const config = {
-      method: "post",
-      url: Constants.API_URL + "/api/name-ai/",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        "Content-Type": "application/json",
-      },
-      data: { name: aiName },
-    };
-
-    try {
-      const response = await axios.request(config);
-      console.log({ response: response.data });
-      setAiNameId(response.data.id);
-      setAiName(aiName);
-      localStorage.setItem("aiId", response.data.id);
-      localStorage.setItem("aiName", aiName);
-    } catch (error) {
-      console.error("Error making API request:", error);
-      alert("Error making API request");
-    }
-  }
 
   const handleSend = async () => {
     if (input.trim() || fileInputRef.current?.files?.length) {
@@ -108,12 +44,17 @@ export function AskAiPage() {
         content: input.trim(),
       };
 
+      if (fileInputRef.current?.files?.length) {
+        const file = fileInputRef.current.files[0];
+        newUserMessage.attachment = file.name;
+      }
+
       setMessages((prev) => [...prev, newUserMessage]);
       setInput("");
       setIsLoading(true);
 
       try {
-        const aiResponse = await getAIResponse(input, aiNameId);
+        const aiResponse = await getAIResponse(input);
         setMessages((prev) => [
           ...prev,
           { id: prev.length + 1, sender: "ai", content: aiResponse },
@@ -134,6 +75,10 @@ export function AskAiPage() {
 
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
+  };
+
+  const handleFileUpload = () => {
+    fileInputRef.current?.click();
   };
 
   return (
@@ -163,9 +108,7 @@ export function AskAiPage() {
                 {message.sender === "ai" && (
                   <Avatar>
                     <AvatarImage src="/ai-avatar.png" alt="AI" />
-                    <AvatarFallback>
-                      {aiName ? aiName[0].toUpperCase() : "AI"}
-                    </AvatarFallback>
+                    <AvatarFallback>AI</AvatarFallback>
                   </Avatar>
                 )}
                 <div>
@@ -207,6 +150,14 @@ export function AskAiPage() {
           }}
           className="flex items-center space-x-2"
         >
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            onClick={handleFileUpload}
+          >
+            <Paperclip className="h-5 w-5" />
+          </Button>
           <Input
             type="text"
             placeholder="Ask me anything..."
@@ -217,6 +168,12 @@ export function AskAiPage() {
           <Button type="submit" disabled={isLoading}>
             <Send className="h-5 w-5" />
           </Button>
+          <input
+            type="file"
+            ref={fileInputRef}
+            className="hidden"
+            onChange={() => handleSend()}
+          />
         </form>
       </footer>
     </div>
