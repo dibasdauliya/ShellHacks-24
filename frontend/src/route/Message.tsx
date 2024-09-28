@@ -46,7 +46,7 @@ const initialMessages = [
 
 const emojis = ["👍", "❤️", "😂", "😮", "😢", "😡"];
 
-export function MessageAppComponent() {
+export function MessageAppPage() {
   const [messages, setMessages] = useState(initialMessages);
   const [newMessage, setNewMessage] = useState("");
   const scrollAreaRef = useRef<HTMLDivElement>(null);

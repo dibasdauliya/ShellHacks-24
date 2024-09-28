@@ -9,6 +9,8 @@ import {
   Image,
   Phone,
   Video,
+  BrainCircuit,
+  NotebookPen,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -21,6 +23,8 @@ const apps = [
   { name: "Gallery", icon: Image },
   { name: "Phone", icon: Phone },
   { name: "Video", icon: Video },
+  { name: "Personal AI", icon: BrainCircuit },
+  { name: "Notes AI", icon: NotebookPen },
 ];
 
 export function MobileHomeScreen() {

@@ -2,11 +2,12 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Camera, Video, Repeat, StopCircle } from "lucide-react";
+import { Camera, Video, Repeat, StopCircle, Image } from "lucide-react";
 import uploadToS3 from "@/utils/awsS3";
 import axios from "axios";
 import { Constants } from "@/Constants";
 import { access } from "fs";
+import { useNavigate } from "react-router-dom";
 
 export function MobileCamera() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -19,6 +20,8 @@ export function MobileCamera() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const [isFrontCamera, setIsFrontCamera] = useState(true);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function setupCamera() {
@@ -192,18 +195,28 @@ export function MobileCamera() {
         )}
       </div>
       <div className="flex justify-between items-center p-4 bg-gray-900">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setMode(mode === "photo" ? "video" : "photo")}
-          className="text-white"
-        >
-          {mode === "photo" ? (
-            <Camera className="h-6 w-6" />
-          ) : (
-            <Video className="h-6 w-6" />
-          )}
-        </Button>
+        <div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setMode(mode === "photo" ? "video" : "photo")}
+            className="text-white"
+          >
+            {mode === "photo" ? (
+              <Camera className="h-6 w-6" />
+            ) : (
+              <Video className="h-6 w-6" />
+            )}
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-white"
+            onClick={() => navigate("/gallery")}
+          >
+            <Image />
+          </Button>
+        </div>
         <Button
           variant="outline"
           size="lg"

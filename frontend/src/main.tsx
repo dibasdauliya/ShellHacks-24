@@ -8,6 +8,8 @@ import { Gallery } from "./route/Gallery.tsx";
 import ChildrenLogin from "./route/children-login.tsx";
 import { CalendarApp } from "./route/Calendar.tsx";
 import { AskAiPage } from "./route/AskAI.tsx";
+import { PhonePage } from "./route/Phone.tsx";
+import { MessageAppPage } from "./route/Message.tsx";
 
 const router = createBrowserRouter([
   {
@@ -33,6 +35,14 @@ const router = createBrowserRouter([
   {
     path: "ask-ai",
     element: <AskAiPage />,
+  },
+  {
+    path: "phone",
+    element: <PhonePage />,
+  },
+  {
+    path: "message",
+    element: <MessageAppPage />,
   },
 ]);
 
