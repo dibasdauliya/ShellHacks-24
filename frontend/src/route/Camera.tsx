@@ -4,6 +4,9 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Camera, Video, Repeat, StopCircle } from "lucide-react";
 import uploadToS3 from "@/utils/awsS3";
+import axios from "axios";
+import { Constants } from "@/Constants";
+import { access } from "fs";
 
 export function MobileCamera() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -58,8 +61,34 @@ export function MobileCamera() {
       const file = dataURLtoFile(imageDataUrl, `photo-${Date.now()}.jpg`);
 
       try {
+        console.log({ access_token: localStorage.getItem("access_token") });
+
         const s3Url = await uploadToS3(file);
         console.log("Image uploaded to S3:", s3Url);
+
+        if (s3Url) {
+          const data = JSON.stringify({
+            image: String(s3Url),
+          });
+
+          const config = {
+            method: "post",
+            maxBodyLength: Infinity,
+            url: Constants.API_URL + "/api/images/",
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+              "Content-Type": "application/json",
+            },
+            data: data,
+          };
+
+          try {
+            const response = await axios.request(config);
+            console.log(JSON.stringify(response.data));
+          } catch (error) {
+            console.error("Error making API request:", error);
+          }
+        }
       } catch (error) {
         console.error("Error uploading image to S3:", error);
       }

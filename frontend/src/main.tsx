@@ -5,6 +5,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
 import { MobileCamera } from "./route/Camera.tsx";
 import { Gallery } from "./route/Gallery.tsx";
+import ChildrenLogin from "./route/children-login.tsx";
 
 const router = createBrowserRouter([
   {
@@ -18,6 +19,10 @@ const router = createBrowserRouter([
   {
     path: "/gallery",
     element: <Gallery />,
+  },
+  {
+    path: "/children-login",
+    element: <ChildrenLogin />,
   },
 ]);
 
