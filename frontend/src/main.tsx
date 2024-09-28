@@ -10,6 +10,7 @@ import { CalendarApp } from "./route/Calendar.tsx";
 import { AskAiPage } from "./route/AskAI.tsx";
 import { PhonePage } from "./route/Phone.tsx";
 import { MessageAppPage } from "./route/Message.tsx";
+import NewsPage from "./route/News.tsx";
 
 const router = createBrowserRouter([
   {
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
   {
     path: "message",
     element: <MessageAppPage />,
+  },
+  {
+    path: "news",
+    element: <NewsPage />,
   },
 ]);
 
