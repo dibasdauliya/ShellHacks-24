@@ -4,6 +4,7 @@ import App from "./route/App.tsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
 import { MobileCamera } from "./route/Camera.tsx";
+import { Gallery } from "./route/Gallery.tsx";
 
 const router = createBrowserRouter([
   {
@@ -13,6 +14,10 @@ const router = createBrowserRouter([
   {
     path: "/camera",
     element: <MobileCamera />,
+  },
+  {
+    path: "/gallery",
+    element: <Gallery />,
   },
 ]);
 
