@@ -11,6 +11,8 @@ import { AskAiPage } from "./route/AskAI.tsx";
 import { PhonePage } from "./route/Phone.tsx";
 import { MessageAppPage } from "./route/Message.tsx";
 import NewsPage from "./route/News.tsx";
+import WeatherApp from "./route/Weather.tsx";
+import Dashboard from "./route/Dashboard.tsx";
 
 const router = createBrowserRouter([
   {
@@ -48,6 +50,14 @@ const router = createBrowserRouter([
   {
     path: "news",
     element: <NewsPage />,
+  },
+  {
+    path: "weather",
+    element: <WeatherApp />,
+  },
+  {
+    path: "/dashboard",
+    element: <Dashboard />,
   },
 ]);
 
