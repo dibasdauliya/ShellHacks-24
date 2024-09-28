@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import App from "./route/App.tsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
-import Test from "./route/Test.tsx";
+import { MobileCamera } from "./route/Camera.tsx";
 
 const router = createBrowserRouter([
   {
@@ -11,8 +11,8 @@ const router = createBrowserRouter([
     element: <App />,
   },
   {
-    path: "/test",
-    element: <Test />,
+    path: "/camera",
+    element: <MobileCamera />,
   },
 ]);
 
