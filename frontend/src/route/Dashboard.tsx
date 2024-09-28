@@ -7,31 +7,47 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import React from "react";
+import { useAuth0 } from "@auth0/auth0-react";
+import ParentDashboard from "@/components/ParentDashboard";
 
 export default function Dashboard() {
+  const {
+    user,
+    isAuthenticated,
+    isLoading,
+    getAccessTokenSilently,
+    loginWithRedirect,
+  } = useAuth0();
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     console.log("Login attempt with Google");
   }
 
-  return (
-    <Card className="w-[350px] m-8 mx-auto">
-      <CardHeader>
-        <CardTitle>Parents Login</CardTitle>
-        <CardDescription>
-          Please sign in to access your account.
-        </CardDescription>
-      </CardHeader>
-      <form onSubmit={handleSubmit}>
-        <CardFooter>
-          <Button type="submit" className="w-full">
-            Sign in with Google
-          </Button>
-        </CardFooter>
-      </form>
-    </Card>
-  );
+  if (!isAuthenticated && !isLoading) {
+    return (
+      <Card className="w-[350px] m-8 mx-auto">
+        <CardHeader>
+          <CardTitle>Parents Login</CardTitle>
+          <CardDescription>
+            Please sign in to access your account.
+          </CardDescription>
+        </CardHeader>
+        <form onSubmit={handleSubmit}>
+          <CardFooter>
+            <Button
+              type="submit"
+              onClick={loginWithRedirect}
+              className="w-full"
+            >
+              Sign in with Google
+            </Button>
+          </CardFooter>
+        </form>
+      </Card>
+    );
+  } else {
+    return <ParentDashboard />;
+  }
 }

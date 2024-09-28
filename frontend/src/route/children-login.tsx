@@ -12,11 +12,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Constants } from "@/Constants";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function ChildrenLogin() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,6 +40,7 @@ export default function ChildrenLogin() {
       console.log({ response });
       const access_token = response.data.access;
       localStorage.setItem("access_token", access_token);
+      navigate("/");
     } catch (error) {
       console.error(error);
     }
