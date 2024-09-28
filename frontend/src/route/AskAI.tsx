@@ -147,7 +147,9 @@ export function AskAiPage() {
         >
           <ArrowLeft className="h-6 w-6" />
         </Button>
-        <h1 className="text-xl font-semibold">Ask AI</h1>
+        <h1 className="text-xl font-semibold">
+          Ask {aiName ? aiName.toUpperCase() : "AI"}
+        </h1>
       </header>
 
       <ScrollArea className="flex-grow p-4" ref={scrollAreaRef}>

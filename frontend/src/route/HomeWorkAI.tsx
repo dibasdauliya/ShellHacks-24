@@ -7,11 +7,26 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
+import apiClient from "@/utils/apiClient";
 
 // Dummy function to simulate AI response
 const getAIResponse = async (message: string): Promise<string> => {
-  await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API delay
-  return `Here's an AI response to: "${message}"`;
+  // await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API delay
+  // return `Here's an AI response to: "${message}"`;
+
+  const config = {
+    method: "post",
+    url: "/api/chat-hw-ai/",
+    data: { user_msg: message, hid: 1 },
+  };
+
+  try {
+    const response = await apiClient.request(config);
+    return response.data.ai_msg;
+  } catch (error) {
+    console.error("Error making API request:", error);
+    alert("Error making API request");
+  }
 };
 
 interface Message {
@@ -55,10 +70,12 @@ export function HomeWorkAI() {
 
       try {
         const aiResponse = await getAIResponse(input);
-        setMessages((prev) => [
-          ...prev,
-          { id: prev.length + 1, sender: "ai", content: aiResponse },
-        ]);
+        if (aiResponse) {
+          setMessages((prev) => [
+            ...prev,
+            { id: prev.length + 1, sender: "ai", content: aiResponse },
+          ]);
+        }
       } catch (error) {
         console.error("Error getting AI response:", error);
         setMessages((prev) => [
