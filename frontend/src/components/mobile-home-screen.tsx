@@ -6,12 +6,8 @@ import {
   BotMessageSquare,
   Newspaper,
   MessageCircle,
-  Gamepad2,
   Image,
-  Mail,
-  Music2,
   Phone,
-  Settings,
   Video,
 } from "lucide-react";
 import { Link } from "react-router-dom";

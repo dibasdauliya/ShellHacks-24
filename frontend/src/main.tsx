@@ -6,6 +6,8 @@ import "./index.css";
 import { MobileCamera } from "./route/Camera.tsx";
 import { Gallery } from "./route/Gallery.tsx";
 import ChildrenLogin from "./route/children-login.tsx";
+import { CalendarApp } from "./route/Calendar.tsx";
+import { AskAiPage } from "./route/AskAI.tsx";
 
 const router = createBrowserRouter([
   {
@@ -23,6 +25,14 @@ const router = createBrowserRouter([
   {
     path: "/children-login",
     element: <ChildrenLogin />,
+  },
+  {
+    path: "calendar",
+    element: <CalendarApp />,
+  },
+  {
+    path: "ask-ai",
+    element: <AskAiPage />,
   },
 ]);
 

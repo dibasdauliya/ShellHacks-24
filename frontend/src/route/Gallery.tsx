@@ -8,38 +8,6 @@ export function Gallery() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [images, setImages] = useState([]);
 
-  //   const images = [
-  //     {
-  //       id: 1,
-  //       src: "/placeholder.svg?height=300&width=300",
-  //       alt: "Gallery image 1",
-  //     },
-  //     {
-  //       id: 2,
-  //       src: "/placeholder.svg?height=300&width=300",
-  //       alt: "Gallery image 2",
-  //     },
-  //     {
-  //       id: 3,
-  //       src: "/placeholder.svg?height=300&width=300",
-  //       alt: "Gallery image 3",
-  //     },
-  //     {
-  //       id: 4,
-  //       src: "/placeholder.svg?height=300&width=300",
-  //       alt: "Gallery image 4",
-  //     },
-  //     {
-  //       id: 5,
-  //       src: "/placeholder.svg?height=300&width=300",
-  //       alt: "Gallery image 5",
-  //     },
-  //     {
-  //       id: 6,
-  //       src: "/placeholder.svg?height=300&width=300",
-  //       alt: "Gallery image 6",
-  //     },
-  //   ];
   useEffect(() => {
     async function fetchImages() {
       try {
