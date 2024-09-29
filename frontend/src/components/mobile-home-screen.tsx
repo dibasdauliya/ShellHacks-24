@@ -15,6 +15,7 @@ import {
   Receipt,
   Youtube,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 const apps = [
@@ -36,13 +37,23 @@ const apps = [
 ];
 
 export function MobileHomeScreen() {
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(intervalId); // Cleanup interval on component unmount
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-100 to-blue-200 p-4 grid place-items-center">
       <div className="max-w-md mx-auto">
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-gray-800">Good Phone</h1>
-          <p className="text-sm text-gray-600">
-            {new Date().toLocaleString("en-US", {
+          <p className="text-sm text-gray-600 mt-3">
+            {currentTime.toLocaleString("en-US", {
               weekday: "long",
               year: "numeric",
               month: "long",

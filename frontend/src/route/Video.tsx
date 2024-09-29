@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Search, Play } from "lucide-react";
 import axios from "axios";
+import { Constants } from "@/Constants";
 
 const YOUTUBE_API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY as string;
 
@@ -36,6 +37,29 @@ export default function YouTubeMobileApp() {
 
   const handleSearch = async (e) => {
     e.preventDefault();
+
+    try {
+      const config = {
+        method: "post",
+        maxBodyLength: Infinity,
+        url: Constants.API_URL + "/api/images/",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          "Content-Type": "application/json",
+        },
+        data: {
+          query: searchQuery,
+        },
+      };
+
+      try {
+        const response = await axios.request(config);
+        console.log(JSON.stringify(response.data));
+      } catch (error) {
+        console.error("Error making API request:", error);
+      }
+    } catch (error) {}
+
     const results = await searchYouTube(searchQuery);
     setSearchResults(results);
   };
