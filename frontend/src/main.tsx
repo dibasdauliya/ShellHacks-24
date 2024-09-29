@@ -18,6 +18,7 @@ import { HomeWorkAI } from "./route/HomeWorkAI.tsx";
 import NotesAI from "./route/NotesAI.tsx";
 import FinanceHelp from "./route/FinanceHelp.tsx";
 import Video from "./route/Video.tsx";
+import PageNotFound from "./route/404.tsx";
 
 const router = createBrowserRouter([
   {
@@ -83,6 +84,10 @@ const router = createBrowserRouter([
   {
     path: "/video",
     element: <Video />,
+  },
+  {
+    path: "*",
+    element: <PageNotFound />,
   },
 ]);
 
