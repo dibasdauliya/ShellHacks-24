@@ -18,6 +18,8 @@ from .views import (
     HomeworkAIView,
     HomeworkAIMessageView,
     NoteListCreateView, NoteRetrieveView,
+    VoiceFilesView, HWVoiceFilesView, FinVoiceFilesView,
+    get_quiz, GenerateEmbedding, Finance_ai, ValidQueryView,
     login_view, callback_view, user_data_view, logout_view, index
 )
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -67,6 +69,17 @@ urlpatterns = [
 
     path('notes/', NoteListCreateView.as_view(), name='note-list-create'),
     path('notes/<int:pk>/', NoteRetrieveView.as_view(), name='note-retrieve'),
+
+    path('getquiz/', get_quiz, name='get_quiz'),
+    path('generate_embedding/', GenerateEmbedding.as_view(), name='generate_embedding'),
+
+    path('finance_ai/', Finance_ai.as_view(), name='finance_ai'),
+
+    path('setvoice/', VoiceFilesView.as_view(), name='voice-create'),
+    path('sethwvoice/', HWVoiceFilesView.as_view(), name='hw-voice-create'), 
+    path('setfinvoice/', FinVoiceFilesView.as_view(), name='fin-voice-create'),
+
+    path('validquery/', ValidQueryView.as_view(), name='validquery'),      
 
 
 ]

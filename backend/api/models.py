@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth.models import AbstractUser
+from pgvector.django import VectorField
 
 class Parent(models.Model):
     email = models.EmailField(max_length=255)
@@ -16,6 +17,9 @@ class Children(AbstractUser):
     content = models.TextField()
     parent = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
+    personal_voice = models.CharField(max_length=255, null=True)
+    homework_voice = models.CharField(max_length=255, null=True)
+    fin_voice = models.CharField(max_length=255, null=True)
 
 
 class Images(models.Model):
@@ -82,7 +86,27 @@ class HomeworkAIMessages(models.Model):
 
 class Note(models.Model):
     user_msg = models.TextField()
-    imgs = models.JSONField()
-    ai_msg = models.TextField()
+    imgs = models.JSONField(null=True)
+    ai_msg = models.TextField(blank=True, null=True)
     owner = models.CharField(max_length=255)
 
+
+class LangchainPgCollection(models.Model):
+    name = models.TextField(blank=True, null=True)
+    cmetadata = models.TextField(blank=True, null=True)  # This field type is a guess.
+    uuid = models.UUIDField(primary_key=True)
+
+    class Meta:
+        db_table = 'langchain_pg_collection'
+
+
+class LangchainPgEmbedding(models.Model):
+    uuid = models.UUIDField(primary_key=True)
+    collection = models.ForeignKey(LangchainPgCollection, models.DO_NOTHING, blank=True, null=True)
+    embedding = VectorField(dimensions=1536) 
+    document = models.TextField(blank=True, null=True)
+    cmetadata = models.TextField(blank=True, null=True)
+    sours = models.CharField(blank=True, null=True, max_length=255) 
+
+    class Meta:
+        db_table = 'langchain_pg_embedding'
