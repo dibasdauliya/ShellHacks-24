@@ -89,7 +89,7 @@ export default function YouTubeMobileApp() {
                 <img
                   src={video.thumbnail}
                   alt={video.title}
-                  className="w-30 h-[90px] object-cover ml-4 rounded-md"
+                  className="w-30 h-[90px] object-cover mt-3 ml-3 mb-3 self-start rounded-md"
                 />
                 <CardContent className="flex-grow p-4">
                   <h3 className="font-semibold">{video.title}</h3>
