@@ -17,6 +17,7 @@ import CreateChildren from "./route/create-children.tsx";
 import { HomeWorkAI } from "./route/HomeWorkAI.tsx";
 import NotesAI from "./route/NotesAI.tsx";
 import FinanceHelp from "./route/FinanceHelp.tsx";
+import Video from "./route/Video.tsx";
 
 const router = createBrowserRouter([
   {
@@ -78,6 +79,10 @@ const router = createBrowserRouter([
   {
     path: "/finance-help",
     element: <FinanceHelp />,
+  },
+  {
+    path: "/video",
+    element: <Video />,
   },
 ]);
 

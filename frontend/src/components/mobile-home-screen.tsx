@@ -13,6 +13,7 @@ import {
   NotebookPen,
   CloudSunRain,
   Receipt,
+  Youtube,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -24,7 +25,7 @@ const apps = [
   { name: "News", icon: Newspaper },
   { name: "Gallery", icon: Image },
   { name: "Phone", icon: Phone },
-  { name: "Video", icon: Video },
+  { name: "Video", icon: Youtube },
   { name: "Homework AI", icon: BrainCircuit },
   { name: "Notes AI", icon: NotebookPen },
   { name: "Weather", icon: CloudSunRain },
