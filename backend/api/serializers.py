@@ -79,5 +79,5 @@ class NoteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Note
         fields = ['id', 'user_msg', 'imgs', 'ai_msg', 'owner']
-        read_only_fields = ['owner']
+        read_only_fields = ['owner', 'ai_msg']
 

@@ -6,20 +6,21 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework import generics
 from .serializers import UserSerializer, ChildrenSerializer, ImageSerializer, MessageSerializer, ContactSerializer, FriendRequestSerializer, FriendRequestUpdateSerializer, PersonalAISerializer, PersonalAIMessageSerializer, HomeworkAISerializer, HomeworkAIMessageSerializer, NoteSerializer
-from .models import Parent, Children, Images, Message, Contact, FriendRequest, PersonalAI, PersonalAIMessages, HomeworkAI, HomeworkAIMessages, Note
+from .models import Parent, Children, Images, Message, Contact, FriendRequest, PersonalAI, PersonalAIMessages, HomeworkAI, HomeworkAIMessages, Note, LangchainPgEmbedding
 from .permissions import IsUserOrReadOnly
-from rest_framework_simplejwt.views import TokenObtainPairView
 from django.db.models import Q
 from rest_framework.exceptions import NotFound
-from .askAI import get_personal_ai_response, get_homework_ai_response, get_Note_Response
+from .askAI import get_personal_ai_response, get_homework_ai_response, get_Note_Response, fetch_quiz, get_finance_response, validQuerry
 import json
 from authlib.integrations.django_client import OAuth
 from django.conf import settings
 from django.shortcuts import redirect, render
 from django.urls import reverse
-from urllib.parse import quote_plus, urlencode
-from django.views.decorators.http import require_GET
+from django.views.decorators.http import require_GET, require_POST
 from django.http import JsonResponse
+from .embedding import get_embedding
+import uuid
+from .voice_clone import voice_clone
 
 oauth = OAuth()
 
@@ -248,10 +249,10 @@ class HomeworkAIMessageView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return HomeworkAIMessages.objects.filter(pa=self.request.data.get('pa'))
+        return HomeworkAIMessages.objects.filter(hid=1)
     
     def perform_create(self, serializer):
-        instn = serializer.save()
+        instn = serializer.save(hid=1)
         request = self.request
         instn.ai_msg = get_homework_ai_response(request.data.get('user_msg'))
         instn.save() 
@@ -272,7 +273,7 @@ class NoteListCreateView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         instn = serializer.save(owner=self.request.user.id)
         request = self.request
-        instn.ai_msg = get_Note_Response(request.data.get('user_msg'), request.data.get('user_msg'))
+        instn.ai_msg = get_Note_Response(request.data.get('user_msg'), instn.id)
         instn.save() 
 
 class NoteRetrieveView(generics.RetrieveAPIView):
@@ -282,6 +283,136 @@ class NoteRetrieveView(generics.RetrieveAPIView):
     def get_queryset(self):
         user = self.request.user
         return Note.objects.filter(owner=user.id)
+    
+@require_GET
+def get_quiz(request):
+    nid = request.GET.get("content_id")
+    qna = fetch_quiz(nid)
+    return JsonResponse({
+            'quiz': qna
+        }, status=200)
+
+class CustomTextSplitter:
+    def __init__(self, chunk_size, chunk_overlap):
+        self.chunk_size = chunk_size
+        self.chunk_overlap = chunk_overlap
+
+    def split_text(self, text):
+        # Removing any additional newlines for splitting
+        text = text.replace('\n\n', ' ')
+        
+        # List to hold the text chunks
+        chunks = []
+        
+        # Split text into chunks based on chunk size and overlap
+        start = 0
+        while start < len(text):
+            end = min(start + self.chunk_size, len(text))
+            chunk = text[start:end]
+            chunks.append(chunk)
+            start += self.chunk_size - self.chunk_overlap
+        
+        return chunks
+    
+
+class GenerateEmbedding(APIView):
+    def post(self, request):  
+        content = request.data.get("content")
+        sours = request.data.get("sours")
+        custom_text_splitter = CustomTextSplitter(chunk_size=800, chunk_overlap=200)
+
+        chunks = custom_text_splitter.split_text(content)
+        for chunk in chunks:
+                    gen_embedding = get_embedding(chunk)
+                    LangchainPgEmbedding.objects.create(
+                        uuid=uuid.uuid4(),
+                        document=chunk,
+                        embedding=gen_embedding,
+                        sours=sours
+                    )
+
+        return Response(status=status.HTTP_200_OK)
+
+
+class Finance_ai(APIView):  
+    def post(self, request):
+        content = request.data.get("user_msg")
+        past_convo = request.data.get("last5")
+        print(content)
+        ai_msg, citation = get_finance_response(content, past_convo)
+        return Response({
+                'ai_msg': ai_msg,
+                'citation': citation
+            }, status=200)
+    
+class ValidQueryView(APIView):  
+    def post(self, request):
+        content = request.data.get("query")
+        response = validQuerry(content)
+        return Response({
+                'response': response,
+            }, status=200)
+
+class VoiceFilesView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request):  
+        voice_url = request.data.get('voice_url', None)
+        voice_id = voice_clone(voice_url)
+        uid = request.user.id
+        usr = Children.objects.filter(id=uid).first()
+        usr.personal_voice = voice_id
+        usr.save()
+        return Response({'voice_id': voice_id}, status=status.HTTP_200_OK)
+    
+    def get(self, request):
+        uid = request.user.id
+        usr = Children.objects.filter(id=uid).first()
+
+        if usr and usr.personal_voice:
+            return Response({'voice_id': usr.personal_voice}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'Voice ID not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+class HWVoiceFilesView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request):  
+        voice_url = request.data.get('voice_url', None)
+        voice_id = voice_clone(voice_url)
+        uid = request.user.id
+        usr = Children.objects.filter(id=uid).first()
+        usr.homework_voice = voice_id
+        usr.save()
+        return Response({'voice_id': voice_id}, status=status.HTTP_200_OK)
+    
+    def get(self, request):
+        uid = request.user.id
+        usr = Children.objects.filter(id=uid).first()
+
+        if usr and usr.homework_voice:
+            return Response({'voice_id': usr.homework_voice}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'Voice ID not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+class FinVoiceFilesView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request):  
+        voice_url = request.data.get('voice_url', None)
+        voice_id = voice_clone(voice_url)
+        uid = request.user.id
+        usr = Children.objects.filter(id=uid).first()
+        usr.fin_voice = voice_id
+        usr.save()
+        return Response({'voice_id': voice_id}, status=status.HTTP_200_OK)
+    
+    def get(self, request):
+        uid = request.user.id
+        usr = Children.objects.filter(id=uid).first()
+
+        if usr and usr.fin_voice:
+            return Response({'voice_id': usr.fin_voice}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'Voice ID not found'}, status=status.HTTP_404_NOT_FOUND)
+
 
 @require_GET
 def login_view(request):

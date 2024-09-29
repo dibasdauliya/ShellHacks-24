@@ -1,24 +1,38 @@
-import openai
-from dotenv import load_dotenv
-import os
+# import vertexai
 
-# Load environment variables from .env file
-load_dotenv()
+# from vertexai.generative_models import GenerativeModel, Part
 
-# Get the API key from the environment variables
-openai.api_key = os.getenv("OPENAI_API_KEY")
+# # TODO(developer): Update & uncomment line below
+# # PROJECT_ID = "your-project-id"
+# PROJECT_ID = "sample-mission-427316"
+# vertexai.init(project=PROJECT_ID, location="us-central1")
 
-# Image URL
-image_url = "https://www.rd.com/wp-content/uploads/2021/04/GettyImages-988013222-scaled-e1618857975729.jpg"
+# model = GenerativeModel("gemini-1.5-flash-002")
 
-# Create a completion request to describe the image
-response = openai.ChatCompletion.create(
-    model="gpt-4",  # specify the model version
-    messages=[
-        {"role": "user", "content": f"Imagine and describe the image found at this URL: {image_url}"}
-    ]
-)
+# response = model.generate_content(
+#     [
+#         Part.from_uri(
+#             "gs://cloud-samples-data/generative-ai/image/scones.jpg",
+#             mime_type="image/jpeg",
+#         ),
+#         "What is shown in this image?",
+#     ]
+# )
 
-# Extract and print the description
-description = response['choices'][0]['message']['content']
-print("Image Description:", description)
+# print(response.text)
+
+import requests
+import json
+
+url = "http://127.0.0.1:8000/api/finance_ai/"
+
+payload = json.dumps({
+  "user_msg": "Hello"
+})
+headers = {
+  'Content-Type': 'application/json'
+}
+
+response = requests.request("POST", url, headers=headers, data=payload)
+
+print(response.text)
