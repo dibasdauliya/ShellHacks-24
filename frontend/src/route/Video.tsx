@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Search, Play } from "lucide-react";
+import { Search, Play, Loader } from "lucide-react";
 import axios from "axios";
 import { Constants } from "@/Constants";
 
@@ -34,15 +34,17 @@ export default function YouTubeMobileApp() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [selectedVideo, setSelectedVideo] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSearch = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
 
     try {
       const config = {
         method: "post",
         maxBodyLength: Infinity,
-        url: Constants.API_URL + "/api/images/",
+        url: Constants.API_URL + "/api/validquery/",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           "Content-Type": "application/json",
@@ -54,14 +56,25 @@ export default function YouTubeMobileApp() {
 
       try {
         const response = await axios.request(config);
-        console.log(JSON.stringify(response.data));
+        const { status, comment } = JSON.parse(response.data.response);
+        console.log(JSON.parse(response.data.response));
+
+        if (status === true) {
+          const results = await searchYouTube(searchQuery);
+          setSearchResults(results);
+        } else {
+          alert(comment);
+          setSearchQuery("");
+        }
       } catch (error) {
         console.error("Error making API request:", error);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {}
-
-    const results = await searchYouTube(searchQuery);
-    setSearchResults(results);
+    } catch (error) {
+      console.error("Error in handleSearch:", error);
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -74,20 +87,26 @@ export default function YouTubeMobileApp() {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="flex-grow mr-2"
         />
-        <Button type="submit" onClick={handleSearch}>
-          <Search className="w-4 h-4 mr-2" />
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? (
+            <Loader className="w-4 h-4 mr-2 animate-spin" />
+          ) : (
+            <Search className="w-4 h-4 mr-2" />
+          )}
           Search
         </Button>
       </form>
 
       <ScrollArea className="flex-grow">
-        {searchResults.length === 0 && (
+        {isLoading ? (
+          <div className="flex items-center justify-center h-full mt-24">
+            <Loader className="w-8 h-8 animate-spin text-gray-400" />
+          </div>
+        ) : searchResults.length === 0 ? (
           <div className="flex items-center justify-center h-full mt-24">
             <p className="text-lg text-gray-400">Search for videos</p>
           </div>
-        )}
-
-        {selectedVideo ? (
+        ) : selectedVideo ? (
           <div className="p-4">
             <div className="aspect-video mb-4">
               <iframe
