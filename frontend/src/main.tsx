@@ -16,6 +16,7 @@ import { Auth0Provider } from "@auth0/auth0-react";
 import CreateChildren from "./route/create-children.tsx";
 import { HomeWorkAI } from "./route/HomeWorkAI.tsx";
 import NotesAI from "./route/NotesAI.tsx";
+import FinanceHelp from "./route/FinanceHelp.tsx";
 
 const router = createBrowserRouter([
   {
@@ -73,6 +74,10 @@ const router = createBrowserRouter([
   {
     path: "/notes-ai",
     element: <NotesAI />,
+  },
+  {
+    path: "/finance-help",
+    element: <FinanceHelp />,
   },
 ]);
 

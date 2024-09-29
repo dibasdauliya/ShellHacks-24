@@ -12,6 +12,7 @@ import {
   BrainCircuit,
   NotebookPen,
   CloudSunRain,
+  Receipt,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -27,6 +28,10 @@ const apps = [
   { name: "Homework AI", icon: BrainCircuit },
   { name: "Notes AI", icon: NotebookPen },
   { name: "Weather", icon: CloudSunRain },
+  {
+    name: "Finance Help",
+    icon: Receipt,
+  },
 ];
 
 export function MobileHomeScreen() {
