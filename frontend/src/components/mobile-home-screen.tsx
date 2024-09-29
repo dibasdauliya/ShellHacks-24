@@ -51,7 +51,7 @@ export function MobileHomeScreen() {
     <div className="min-h-screen bg-gradient-to-b from-blue-100 to-blue-200 p-4 grid place-items-center">
       <div className="max-w-md mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-800">Good Phone</h1>
+          <h1 className="text-2xl font-bold text-gray-800">Good Fone</h1>
           <p className="text-sm text-gray-600 mt-3">
             {currentTime.toLocaleString("en-US", {
               weekday: "long",
