@@ -172,6 +172,7 @@ export default function AIChat({
           .filter((message) => message.sender === "ai")
           .slice(-5)
           .map((message) => message.content);
+        //   @ts-ignore
         const aiResponse = await getAIResponse(input, lastFiveAIResponses);
         if (aiResponse.message) {
           setMessages((prev) => [

@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
@@ -12,13 +11,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import ParentDashboard from "@/components/ParentDashboard";
 
 export default function Dashboard() {
-  const {
-    user,
-    isAuthenticated,
-    isLoading,
-    getAccessTokenSilently,
-    loginWithRedirect,
-  } = useAuth0();
+  const { isAuthenticated, isLoading, loginWithRedirect } = useAuth0();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -38,6 +31,7 @@ export default function Dashboard() {
           <CardFooter>
             <Button
               type="submit"
+              //   @ts-ignore
               onClick={loginWithRedirect}
               className="w-full"
             >

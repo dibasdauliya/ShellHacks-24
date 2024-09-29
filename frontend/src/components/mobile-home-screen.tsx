@@ -8,7 +8,6 @@ import {
   MessageCircle,
   Image,
   Phone,
-  Video,
   BrainCircuit,
   NotebookPen,
   CloudSunRain,

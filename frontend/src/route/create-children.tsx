@@ -26,6 +26,7 @@ export default function CreateChildren() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  //   @ts-ignore
   const { user, isAuthenticated, isLoading, getAccessTokenSilently } =
     useAuth0();
 

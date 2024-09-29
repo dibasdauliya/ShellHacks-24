@@ -6,7 +6,6 @@ import { Camera, Video, Repeat, StopCircle, Image } from "lucide-react";
 import uploadToS3 from "@/utils/awsS3";
 import axios from "axios";
 import { Constants } from "@/Constants";
-import { access } from "fs";
 import { useNavigate } from "react-router-dom";
 
 export function MobileCamera() {

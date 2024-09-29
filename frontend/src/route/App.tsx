@@ -1,6 +1,6 @@
 import { MobileHomeScreen } from "@/components/mobile-home-screen";
 import { useEffect, useState } from "react";
-import { redirect, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function App() {
   const [isChildren, setIsChildren] = useState(false);
